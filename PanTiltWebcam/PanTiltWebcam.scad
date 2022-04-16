@@ -7,6 +7,9 @@ stepper_motor();
 
 tilt_bracket();
 
+translate([0, 0, 40])
+efficient_cube([30, 40, 10], thickness=2, center=false);
+
 module tilt_bracket() {
     
     union() {
@@ -36,7 +39,7 @@ module tilt_bracket() {
         difference() {
             color([1, 0, 0])
             translate([0, 0, 1 + 21])
-            cube([42, 42, 2], center=true);
+            efficient_cube([42, 42, 2], center=true);
         }
         
         // Axle supports
@@ -123,6 +126,61 @@ module stepper_motor() {
             for (j=[-1:2:1]) {
                 translate([31/2 * i, 31/2 * j, 20.5 - 5])
                 cylinder(r=1.5, h=6);
+            }
+        }
+    }
+}
+
+
+/*
+This is a very valuable module. It allows easy replacement
+of a solid cube with one that has lots of area cut away
+yet it maintains a great deal of shear and tensile strength.
+
+This is a drop-in replacement for cube();
+*/
+module efficient_cube(dims, center=false, thickness=2) {
+    
+    translation_vector = [0, 0, 0];
+    if (!center) {
+        translation_vector = dims / 2;
+    }
+    
+    translate(translation_vector)
+    union() {
+        
+        // Border
+        difference() {
+            cube(dims, center=true);
+            cube(dims - [thickness * 2, thickness * 2, -thickness], center=true);
+        }
+        
+        // Slats
+        difference() {
+            
+            slat_length = sqrt(pow(dims[0] - thickness / 2, 2) + pow(dims[1] - thickness / 2, 2));
+            slat_angle = atan((dims[0] - thickness / 2)/(dims[1] - thickness / 2));
+            
+            // Untrimmed slats
+            union() {
+                for (i=[-1:2:1]) {
+                    rotate([0, 0, i * slat_angle])
+                    cube([thickness, slat_length, dims[2]], center=true);
+                }
+            }
+            
+            // Boundary cuts
+            union() {
+                for (i=[-1:2:1]) {
+                    translate([(dims[0] - 0.1) * i, 0, 0])
+                    scale([1, 1, 1.2])
+                    cube(dims, center=true);
+                }
+                for (i=[-1:2:1]) {
+                    translate([0, (dims[1] - 0.1) * i, 0])
+                    scale([1, 1, 1.2])
+                    cube(dims, center=true);
+                }
             }
         }
     }
