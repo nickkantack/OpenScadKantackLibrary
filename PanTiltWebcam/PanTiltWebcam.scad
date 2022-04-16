@@ -1,13 +1,27 @@
 
+include <../Gear/Gear.scad>
+
 $fs = 0.5;
 $fa = 1;
 
-hinge_height = 10;
+hinge_height = 20;
+axel_radius = 2.5;
+axel_radial_margin = 0.25;
+square_margin = 0.25;
+shaft_margin = 0.1;
 
 rotate([0, 90, 0])
 stepper_motor();
 
 tilt_bracket();
+
+tilt_platform();
+
+tilt_axel();
+
+square_tilt_gear();
+
+round_tilt_gear();
 
 module tilt_bracket() {
     
@@ -48,25 +62,22 @@ module tilt_bracket() {
                 union() {
                     
                     color([1, 0, 0])
-                    translate([18.5 * i, 0, 5 + 21 + 2])
-                    cube([5, 10, 10], center=true);
+                    translate([18.5 * i, 0, hinge_height / 2 + 21 + 2])
+                    cube([5, 10, hinge_height], center=true);
                     
                     color([1, 0, 0])
-                    translate([18.5 * i, 0, 5 + 21 + 2 + 5])
+                    translate([18.5 * i, 0, hinge_height + 21 + 2])
                     rotate([0, 90, 0])
                     cylinder(r=5, h=5, center=true);
                 }
                 
                 // Cut for axel
-                translate([18.5 * i, 0, 5 + 21 + 2 + 5])
+                translate([18.5 * i, 0, 21 + 2 + hinge_height])
                 rotate([0, 90, 0])
-                cylinder(r=3, h=8, center=true);
+                cylinder(r=axel_radius + axel_radial_margin, h=8, center=true);
             }
         }
-       
-        
     }
-    
 }
 
 
@@ -75,26 +86,84 @@ module tilt_platform() {
     union() {
         
         // main base
+        translate([0, 0, 31.5 + hinge_height])
+        efficient_cube([30, 50, 3], thickness=3, center=true);
         
         for (i=[-1:2:1]) {
             
             // Hinge
-            union() {
+            // circular portion
+            translate([0, 0, 23 + hinge_height])
+            rotate([0, 90, 0])
+            difference() {
                 
-                // cube portion
-                
-                // circular portion
-                difference() {
+                union() {
                     
+                    // cube portion
+                    translate([-5, 0, 0])
+                    cube([10, 10, 30], center=true);
+                    
+                    // The hinge wall
+                    cylinder(r=5, h=31, center=true);
                 }
                 
-            }
-            
+                // The hinge hole
+                cylinder(r=axel_radius + axel_radial_margin, h=50, center=true);         
+            } 
         }
-        
     }
-    
 }
+
+module tilt_axel() {
+    color([0.5, 0.5, 1])
+    union() {
+        
+        // Main shaft
+        translate([0, 0, 23 + hinge_height])
+        rotate([0, 90, 0])
+        cylinder(r=axel_radius, h=47, center=true);
+        
+        // Round cap
+        translate([-23, 0, 23 + hinge_height])
+        rotate([0, 90, 0])
+        cylinder(r=axel_radius * 2, h=3, center=true);
+        
+        // Square part
+        translate([25 + 2, 0, 23 + hinge_height])
+        cube([axel_radius * 2 + 4, axel_radius * 2, axel_radius * 2], center=true);
+    }
+}
+
+module square_tilt_gear() {
+    color([0.5, 1, 0.5])
+    translate([27, 0, 23 + hinge_height])
+    rotate([0, 90, 0])
+    scale([1, 1, 4])
+    difference() {
+        efficient_gear(tooth_height=2, mid_tooth_radius=30, inner_cut_radius=26, inner_keep_radius=6, slat_thickness=3, modes=4);
+        // square cut
+        cube([(axel_radius + square_margin) * 2, (axel_radius + square_margin) * 2, 2], center=true);
+    }
+}
+
+module round_tilt_gear() {
+    color([0.5, 1, 0.5])
+    union() {
+        translate([27, 0, 0])
+        rotate([0, 90, 0])
+        scale([1, 1, 4])
+        difference() {
+            gear(tooth_height=2, mid_tooth_radius=12.7);
+            // shaft cut
+            cylinder(r=5/2 + shaft_margin, h=5, center=true);
+        }
+      
+        // notch on shaft
+        translate([27, 0, -1 -2])
+        cube([4, 8, 2], center=true);
+    }
+}
+    
 
 module stepper_motor() {
     difference() {
