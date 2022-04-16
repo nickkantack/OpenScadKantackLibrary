@@ -2,13 +2,12 @@
 $fs = 0.5;
 $fa = 1;
 
+hinge_height = 10;
+
 rotate([0, 90, 0])
 stepper_motor();
 
 tilt_bracket();
-
-translate([0, 0, 40])
-efficient_cube([30, 40, 10], thickness=2, center=false);
 
 module tilt_bracket() {
     
@@ -39,7 +38,7 @@ module tilt_bracket() {
         difference() {
             color([1, 0, 0])
             translate([0, 0, 1 + 21])
-            efficient_cube([42, 42, 2], center=true);
+            efficient_cube([42, 42, 2], center=true, thickness=5);
         }
         
         // Axle supports
@@ -65,6 +64,33 @@ module tilt_bracket() {
             }
         }
        
+        
+    }
+    
+}
+
+
+module tilt_platform() {
+    
+    union() {
+        
+        // main base
+        
+        for (i=[-1:2:1]) {
+            
+            // Hinge
+            union() {
+                
+                // cube portion
+                
+                // circular portion
+                difference() {
+                    
+                }
+                
+            }
+            
+        }
         
     }
     
@@ -141,10 +167,7 @@ This is a drop-in replacement for cube();
 */
 module efficient_cube(dims, center=false, thickness=2) {
     
-    translation_vector = [0, 0, 0];
-    if (!center) {
-        translation_vector = dims / 2;
-    }
+    translation_vector = center ? [0, 0, 0] : dims / 2;
     
     translate(translation_vector)
     union() {
