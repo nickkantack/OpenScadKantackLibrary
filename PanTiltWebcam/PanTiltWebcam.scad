@@ -23,6 +23,8 @@ square_tilt_gear();
 
 round_tilt_gear();
 
+gear_base();
+
 module tilt_bracket() {
     
     union() {
@@ -138,9 +140,8 @@ module square_tilt_gear() {
     color([0.5, 1, 0.5])
     translate([27, 0, 23 + hinge_height])
     rotate([0, 90, 0])
-    scale([1, 1, 4])
     difference() {
-        efficient_gear(tooth_height=2, mid_tooth_radius=30, inner_cut_radius=26, inner_keep_radius=6, slat_thickness=3, modes=4);
+        efficient_gear(tooth_height=2, mid_tooth_radius=30, inner_cut_radius=26, inner_keep_radius=6, slat_thickness=3, modes=4, height=4);
         // square cut
         cube([(axel_radius + square_margin) * 2, (axel_radius + square_margin) * 2, 2], center=true);
     }
@@ -151,9 +152,8 @@ module round_tilt_gear() {
     union() {
         translate([27, 0, 0])
         rotate([0, 90, 0])
-        scale([1, 1, 4])
         difference() {
-            gear(tooth_height=2, mid_tooth_radius=12.7);
+            gear(tooth_height=2, mid_tooth_radius=12.7, height=4);
             // shaft cut
             cylinder(r=5/2 + shaft_margin, h=5, center=true);
         }
@@ -164,6 +164,72 @@ module round_tilt_gear() {
     }
 }
     
+
+module gear_base() {
+    
+    color([0.5, 1, 1])
+    union() {
+        
+        // Bottom platform gear and box
+        translate([0, 0, -21])
+        union() {
+            // gear
+            difference() {
+                // the gear without the track
+                efficient_gear(tooth_height=2, mid_tooth_radius=50, inner_cut_radius=35, inner_keep_radius=0, slat_thickness=3, modes=4, height=4);
+                
+                // Track for bottom base posts
+                translate([0, 0, -3.5])
+                ring_blade(height=4, thickness=8, mid_radius=42.5);
+            }
+            
+            // box
+            efficient_cube([42, 42, 4], center=true, thickness=5);
+            
+            // Outer rail guard
+            translate([0, 0, -2.5])
+            difference() {
+                cylinder(r=48, h=5, center=true);
+                cylinder(r=45, h=6, center=true);
+            }
+            
+            // Inner rail guard
+            translate([0, 0, -2.5])
+            difference() {
+                cylinder(r=40, h=5, center=true);
+                cylinder(r=37, h=6, center=true);
+            }
+            
+        }
+        
+        // Brace for screws
+        difference() {
+            translate([0, 0, -31/2 - 2])
+            translate([20.6 + 1, 0, 0])
+            cube([2, 42, 11], center=true);
+            
+            // Cutout to save some material
+            translate([0, 0, -31/2 + 1.5])
+            translate([18, 0, 0])
+            cube([12, 20, 10], center=true);
+            
+            // screw holes
+            for (i=[-1:2:1]) {
+                translate([20.5, i * 31/2, -31/2])
+                rotate([0, 90, 0])
+                cylinder(r=1.5, h=10, center=true);
+            }
+            
+        }
+    }
+}
+
+module ring_blade(height, thickness, mid_radius) {
+    
+    rotate_extrude()
+    polygon(points=[[mid_radius - thickness / 2, 0], [mid_radius, height], [mid_radius + thickness/2, 0]]);
+    
+}
 
 module stepper_motor() {
     difference() {
