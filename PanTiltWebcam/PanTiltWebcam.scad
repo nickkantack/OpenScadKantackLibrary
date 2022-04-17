@@ -245,6 +245,7 @@ module ring_blade(height, thickness, mid_radius) {
 
 module final_base() {
     
+    color([1, 0.5, 1])
     union() {
         
         // The box for the stepper motor
@@ -335,10 +336,13 @@ module pan_gear() {
             efficient_gear(tooth_height=2, mid_tooth_radius=18.75, inner_cut_radius=14, inner_keep_radius=5, slat_thickness=3, modes=2, height=4);
             
             // shaft cut
+            cylinder(r=2.5 + shaft_margin, h=20, center=true);
             
         }
         
         // Notch
+        translate([-2, 0, 0])
+        cube([2, 4, 4], center=true);
         
     }
     
