@@ -9,7 +9,9 @@ axel_radius = 2.5;
 axel_radial_margin = 0.25;
 square_margin = 0.25;
 shaft_margin = 0.1;
+post_height=15;
 
+// Tilt stepper
 rotate([0, 90, 0])
 stepper_motor();
 
@@ -24,6 +26,15 @@ square_tilt_gear();
 round_tilt_gear();
 
 gear_base();
+
+final_base();
+
+pan_gear();
+
+// Pan stepper
+translate([75, 0, 7])
+rotate([0, 180, 0])
+stepper_motor();
 
 module tilt_bracket() {
     
@@ -176,7 +187,7 @@ module gear_base() {
             // gear
             difference() {
                 // the gear without the track
-                efficient_gear(tooth_height=2, mid_tooth_radius=50, inner_cut_radius=35, inner_keep_radius=0, slat_thickness=3, modes=4, height=4);
+                efficient_gear(tooth_height=2, mid_tooth_radius=56, inner_cut_radius=37, inner_keep_radius=0, slat_thickness=3, modes=4, height=4);
                 
                 // Track for bottom base posts
                 translate([0, 0, -3.5])
@@ -228,6 +239,108 @@ module ring_blade(height, thickness, mid_radius) {
     
     rotate_extrude()
     polygon(points=[[mid_radius - thickness / 2, 0], [mid_radius, height], [mid_radius + thickness/2, 0]]);
+    
+}
+
+
+module final_base() {
+    
+    union() {
+        
+        // The box for the stepper motor
+        union() {
+            
+            // Faceplate
+            translate([75, 0, -15.1])
+            difference() {
+                
+                // Uncut faceplate
+                cube([43, 43, 3], center=true);
+                
+                // Center hole
+                cylinder(r=11.5, h=4, center=true);
+                
+                // Screw hole cuts that will be hard to use
+                for (i=[-1:2:1]) {
+                    for (j=[-1:2:1]) {
+                        translate([31/2 * i, 31/2 * j, 0])
+                        cylinder(r=1.5, h=30, center=true);
+                    }
+                }
+                
+            }
+            
+            // bottom supports
+            for (i=[-1:2:1]) {
+                translate([75, 23 * i, -23-post_height / 2+4.75])
+                rotate([90, 0, 0])
+                efficient_cube([43, post_height + 9.5, 3], center=true, slat_thickness=3);
+            }
+            
+            // top basket supports
+            for (i=[-1:2:1]) {
+                translate([75, 23 * i, -2])
+                rotate([90, 0, 0])
+                efficient_cube([43, post_height + 9.5, 3], center=true, slat_thickness=3);
+            }
+            
+            // top basket supports
+            for (i=[-1:2:1]) {
+                translate([75 + 23 * i, 0, -2])
+                rotate([0, 90, 0])
+                efficient_cube([post_height + 9.5, 49, 3], center=true, slat_thickness=3);
+            }
+            
+        }
+        
+        // The base for the posts
+        translate([0, 0, -23 - post_height + 1.5])
+        efficient_cube([64, 64, 3], center=true, thickness=3);
+        
+        // The base to the box for the stepper
+        translate([64, 0, -23 - post_height + 1.5])
+        efficient_cube([64, 43, 3], center=true, thickness=3);
+        
+        // The posts
+        for (i=[0:3]) {
+            rotate([0, 0, i * 90 + 45])
+            translate([42.5, 0, -23 -post_height])
+            union() {
+                
+                //cylinder
+                cylinder(r=1.5, h=post_height);
+                
+                // thicker cylinder
+                cylinder(r=3, h=post_height - 4);
+                
+                //hemisphere
+                translate([0, 0, post_height])
+                sphere(r=1.5);
+                
+            }
+            
+        }
+        
+    }
+    
+}
+
+module pan_gear() {
+    
+    color([1, 1, 0.5])
+    translate([75, 0, -21])
+    union() {
+        difference() {
+            rotate([0, 0, 5])
+            efficient_gear(tooth_height=2, mid_tooth_radius=18.75, inner_cut_radius=14, inner_keep_radius=5, slat_thickness=3, modes=2, height=4);
+            
+            // shaft cut
+            
+        }
+        
+        // Notch
+        
+    }
     
 }
 
