@@ -100,7 +100,7 @@ module tilt_platform() {
         
         // main base
         translate([0, 0, 31.5 + hinge_height])
-        efficient_cube([30, 50, 3], thickness=3, center=true);
+        efficient_cube([31, 50, 3], thickness=3, center=true);
         
         for (i=[-1:2:1]) {
             
@@ -114,7 +114,7 @@ module tilt_platform() {
                     
                     // cube portion
                     translate([-5, 0, 0])
-                    cube([10, 10, 30], center=true);
+                    cube([10, 10, 31], center=true);
                     
                     // The hinge wall
                     cylinder(r=5, h=31, center=true);
@@ -143,7 +143,7 @@ module tilt_axel() {
         
         // Square part
         translate([25 + 2, 0, 23 + hinge_height])
-        cube([axel_radius * 2 + 4, axel_radius * 2, axel_radius * 2], center=true);
+        cube([axel_radius * sqrt(2) + 4, axel_radius * sqrt(2), axel_radius * sqrt(2)], center=true);
     }
 }
 
@@ -154,7 +154,7 @@ module square_tilt_gear() {
     difference() {
         efficient_gear(tooth_height=2, mid_tooth_radius=30, inner_cut_radius=26, inner_keep_radius=6, slat_thickness=3, modes=4, height=4);
         // square cut
-        cube([(axel_radius + square_margin) * 2, (axel_radius + square_margin) * 2, 2], center=true);
+        cube([(axel_radius + square_margin) * sqrt(2), (axel_radius + square_margin) * sqrt(2), 20], center=true);
     }
 }
 
