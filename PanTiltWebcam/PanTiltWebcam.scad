@@ -8,7 +8,7 @@ hinge_height = 20;
 axel_radius = 2.5;
 axel_radial_margin = 0.25;
 square_margin = 0.25;
-shaft_margin = 0.1;
+shaft_margin = 0.25;
 post_height=15;
 
 // Tilt stepper
@@ -27,12 +27,14 @@ round_tilt_gear();
 
 gear_base();
 
+translate([0, 0, -2])
 final_base();
 
+translate([0, 0, -2])
 pan_gear();
 
 // Pan stepper
-translate([75, 0, 7])
+translate([75, 0, 5])
 rotate([0, 180, 0])
 stepper_motor();
 
@@ -56,7 +58,7 @@ module tilt_bracket() {
             for (i=[-1:2:1]) {
                 translate([20.5, i * 31/2, 31/2])
                 rotate([0, 90, 0])
-                cylinder(r=1.5, h=10, center=true);
+                cylinder(r=2, h=10, center=true);
             }
             
         }
@@ -152,7 +154,7 @@ module square_tilt_gear() {
     translate([27, 0, 23 + hinge_height])
     rotate([0, 90, 0])
     difference() {
-        efficient_gear(tooth_height=2, mid_tooth_radius=30, inner_cut_radius=26, inner_keep_radius=6, slat_thickness=3, modes=4, height=4);
+        efficient_gear(tooth_height=3, mid_tooth_radius=30, inner_cut_radius=26, inner_keep_radius=6, slat_thickness=3, modes=4, height=4);
         // square cut
         cube([(axel_radius + square_margin) * sqrt(2), (axel_radius + square_margin) * sqrt(2), 20], center=true);
     }
@@ -164,7 +166,7 @@ module round_tilt_gear() {
         translate([27, 0, 0])
         rotate([0, 90, 0])
         difference() {
-            gear(tooth_height=2, mid_tooth_radius=12.7, height=4);
+            gear(tooth_height=3, mid_tooth_radius=12.7, height=4);
             // shaft cut
             cylinder(r=5/2 + shaft_margin, h=5, center=true);
         }
@@ -182,12 +184,12 @@ module gear_base() {
     union() {
         
         // Bottom platform gear and box
-        translate([0, 0, -21])
+        translate([0, 0, -23])
         union() {
             // gear
             difference() {
                 // the gear without the track
-                efficient_gear(tooth_height=2, mid_tooth_radius=56, inner_cut_radius=37, inner_keep_radius=0, slat_thickness=3, modes=4, height=4);
+                efficient_gear(tooth_height=3, mid_tooth_radius=56, inner_cut_radius=37, inner_keep_radius=0, slat_thickness=3, modes=4, height=4);
                 
                 // Track for bottom base posts
                 translate([0, 0, -3.5])
@@ -228,7 +230,7 @@ module gear_base() {
             for (i=[-1:2:1]) {
                 translate([20.5, i * 31/2, -31/2])
                 rotate([0, 90, 0])
-                cylinder(r=1.5, h=10, center=true);
+                cylinder(r=2, h=10, center=true);
             }
             
         }
@@ -265,7 +267,7 @@ module final_base() {
                 for (i=[-1:2:1]) {
                     for (j=[-1:2:1]) {
                         translate([31/2 * i, 31/2 * j, 0])
-                        cylinder(r=1.5, h=30, center=true);
+                        cylinder(r=2, h=30, center=true);
                     }
                 }
                 
@@ -275,21 +277,21 @@ module final_base() {
             for (i=[-1:2:1]) {
                 translate([75, 23 * i, -23-post_height / 2+4.75])
                 rotate([90, 0, 0])
-                efficient_cube([43, post_height + 9.5, 3], center=true, slat_thickness=3);
+                efficient_cube([43, post_height + 9.5, 3], center=true, thickness=3);
             }
             
             // top basket supports
             for (i=[-1:2:1]) {
                 translate([75, 23 * i, -2])
                 rotate([90, 0, 0])
-                efficient_cube([43, post_height + 9.5, 3], center=true, slat_thickness=3);
+                efficient_cube([43, post_height + 9.5, 3], center=true, thickness=3);
             }
             
             // top basket supports
             for (i=[-1:2:1]) {
                 translate([75 + 23 * i, 0, -2])
                 rotate([0, 90, 0])
-                efficient_cube([post_height + 9.5, 49, 3], center=true, slat_thickness=3);
+                efficient_cube([post_height + 9.5, 49, 3], center=true, thickness=3);
             }
             
         }
@@ -330,10 +332,11 @@ module pan_gear() {
     
     color([1, 1, 0.5])
     translate([75, 0, -21])
+    rotate([0, 0, 5])
     union() {
+        
         difference() {
-            rotate([0, 0, 5])
-            efficient_gear(tooth_height=2, mid_tooth_radius=18.75, inner_cut_radius=14, inner_keep_radius=5, slat_thickness=3, modes=2, height=4);
+            efficient_gear(tooth_height=3, mid_tooth_radius=18.75, inner_cut_radius=14, inner_keep_radius=5, slat_thickness=3, modes=2, height=4);
             
             // shaft cut
             cylinder(r=2.5 + shaft_margin, h=20, center=true);
@@ -341,7 +344,7 @@ module pan_gear() {
         }
         
         // Notch
-        translate([-2, 0, 0])
+        translate([-3.25 - shaft_margin, 0, 0])
         cube([2, 4, 4], center=true);
         
     }
