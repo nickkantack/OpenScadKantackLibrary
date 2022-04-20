@@ -78,18 +78,18 @@ module tilt_bracket() {
                     
                     color([1, 0, 0])
                     translate([18.5 * i, 0, hinge_height / 2 + 21 + 2])
-                    cube([5, 10, hinge_height], center=true);
+                    cube([5, 12, hinge_height], center=true);
                     
                     color([1, 0, 0])
                     translate([18.5 * i, 0, hinge_height + 21 + 2])
                     rotate([0, 90, 0])
-                    cylinder(r=5, h=5, center=true);
+                    cylinder(r=6, h=5, center=true);
                 }
                 
                 // Cut for axel
                 translate([18.5 * i, 0, 21 + 2 + hinge_height])
                 rotate([0, 90, 0])
-                cylinder(r=axel_radius + axel_radial_margin, h=8, center=true);
+                cylinder(r=i==1?axel_radius:axel_radius * sqrt(2) + axel_radial_margin, h=8, center=true);
             }
         }
     }
@@ -123,7 +123,7 @@ module tilt_platform() {
                 }
                 
                 // The hinge hole
-                cylinder(r=axel_radius + axel_radial_margin, h=50, center=true);         
+                cube([2 * axel_radius + square_margin, 2 * axel_radius + square_margin, 40], center=true);         
             } 
         }
     }
@@ -138,12 +138,21 @@ module tilt_axel() {
         rotate([0, 90, 0])
         cylinder(r=axel_radius, h=47, center=true);
         
+        // Big square part
+        translate([-1, 0, 23 + hinge_height])
+        cube([32, axel_radius * 2, axel_radius * 2], center=true);
+        
+        // Bigger circular part
+        translate([-19, 0, 23 + hinge_height])
+        rotate([0, 90, 0])
+        cylinder(r=axel_radius * sqrt(2), h=5.5, center=true);
+        
         // Round cap
         translate([-23, 0, 23 + hinge_height])
         rotate([0, 90, 0])
-        cylinder(r=axel_radius * 2, h=3, center=true);
+        cylinder(r=axel_radius * 2, h=3.5, center=true);
         
-        // Square part
+        // Little square part
         translate([25 + 2, 0, 23 + hinge_height])
         cube([axel_radius * sqrt(2) + 4, axel_radius * sqrt(2), axel_radius * sqrt(2)], center=true);
     }
@@ -172,8 +181,8 @@ module round_tilt_gear() {
         }
       
         // notch on shaft
-        translate([27, 0, -1 -2])
-        cube([4, 8, 2], center=true);
+        translate([27, 0, -1 -0.5-2.5])
+        cube([4, 8, 3], center=true);
     }
 }
     
@@ -344,7 +353,7 @@ module pan_gear() {
         }
         
         // Notch
-        translate([-3.25 - shaft_margin, 0, 0])
+        translate([-3.5, 0, 0])
         cube([2, 4, 4], center=true);
         
     }
