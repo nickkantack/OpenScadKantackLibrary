@@ -1,5 +1,6 @@
 
 include <../EfficientCube/EfficientCube.scad>
+include <../Screws/Screws.scad>
 
 $fa = 1;
 $fs = 0.5;
@@ -7,18 +8,18 @@ $fs = 0.5;
 ground_thickness = 3;
 wiring_gap = 30;
 
-// relay rack base
-efficient_cube([50, 33.5 * 5 + 6, ground_thickness], center=true);
-
-// posts for relays
-for (i=[-5:2:5]) {
-    translate(i * [0, 33.5/2, 0])
-    cube([50, 3, ground_thickness], center=true);
-    for (j=[-1:2:1]) {
-        translate([j * 22, i * 33.5/2, 0])
-        cylinder(r=2.5/2, h=5 + (abs(i) < 4 ? 20 : 0));
-    }
+difference() {
+    translate([0, 0, 1])
+    cylinder(r=4, h=4);
+    M5(10, forCut = true);
 }
+
+translate([8, 0, 1])
+M5(4, forCut = false);
+
+/*
+// relay rack base
+efficient_cube([50, 33.5 * 5 + 6, ground_thickness], thickness=3, center=true);
 
 // joiner for interface board braces
 translate([wiring_gap / 2 + 50 / 2, 0, 0])
@@ -45,3 +46,12 @@ for (i=[0:1]) {
     translate([0, -103/2, 0])
     cube([5, 2, 30], center=true);
 }
+
+// front bottom removable rail for relays
+translate([-6, 0, 0])
+difference() {
+    cube([16, 105, 6], center=true);
+    translate([8 - 0.5, 0, 0])
+    cube([3, 106, 2], center=true);
+}
+*/
